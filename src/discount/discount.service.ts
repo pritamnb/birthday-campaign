@@ -5,7 +5,9 @@ import { Discount, DiscountDocument } from './discount.schema';
 
 @Injectable()
 export class DiscountService {
-    constructor(@InjectModel(Discount.name) private discountModel: Model<DiscountDocument>) { }
+    constructor(
+        @InjectModel(Discount.name) private discountModel: Model<DiscountDocument>
+    ) { }
 
     async generateDiscountCode(userId: string): Promise<string> {
         const discountCode = `BDAY-${Math.random().toString(36).substring(7).toUpperCase()}`;
@@ -28,6 +30,23 @@ export class DiscountService {
     }
 
     async getAvailableDiscounts(userId: string): Promise<Discount[]> {
-        return this.discountModel.find({ userId, used: false }).exec();
+        return this.discountModel.find({ userId, used: false, isExpired: false }).exec();
+    }
+
+
+    /**
+    * 
+    * @param userId 
+    * expires codes if birthdate is passed 
+    */
+    async expireCode(userId: string | unknown) {
+        const discount = await this.discountModel.findOne({ userId });
+
+        if (!discount) {
+            throw new Error(`No discount found for user with ID ${userId}`);
+        }
+        discount.isExpired = true;
+        await discount.save()
+        console.info(`Discount for user ${userId} has been expired.`);
     }
 }
