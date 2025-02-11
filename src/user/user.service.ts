@@ -60,6 +60,7 @@ export class UserService {
 
     /**
      * 
+     * @returns 
      */
 
 
@@ -67,7 +68,7 @@ export class UserService {
         const today = moment().startOf('day');
         const nextWeek = moment(today).add(7, 'days');
 
-        // Extract the month and day for both today and the next week
+        // Extracting the month and day for both today and the next week
         const todayMonthDay = today.format('MM-DD');
         const nextWeekMonthDay = nextWeek.format('MM-DD');
 
@@ -105,10 +106,30 @@ export class UserService {
         console.log('Running cron job to find eligible users...');
         const eligibleUsers = await this.getBirthdayUsers();
         for (const user of eligibleUsers) {
-            const { email } = user;
-            const { emailSubject, html } = await this.generateTemplate(user);
+            if (!user.notificationSent) {
+                console.info('Notification sending');
+                const { email } = user;
+                const { emailSubject, html } = await this.generateTemplate(user);
 
-            await this.notificationService.sendEmail(email, emailSubject, html);
+                await this.notificationService.sendEmail(email, emailSubject, html);
+                await this.notificationStatusUpdate(user['_id']);
+                console.info('Notification sent!');
+
+            }
+            console.info('Notification already sent!');
+
+        }
+    }
+    /**
+     * 
+     * @param userId 
+     * It will update notification status to true when notification is sent
+     */
+    private async notificationStatusUpdate(userId: string) {
+        const isUser = await this.userModel.findById(userId);
+        if (isUser) {
+            isUser.notificationSent = true;
+            await isUser.save();
         }
     }
     private async generateTemplate(user: User) {
