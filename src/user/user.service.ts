@@ -113,7 +113,7 @@ export class UserService {
                 const { emailSubject, html } = await this.generateTemplate(user);
 
                 await this.notificationService.sendEmail(email, emailSubject, html);
-                // await this.notificationStatusUpdate(user['_id']);
+                await this.notificationStatusUpdate(user['_id']);
                 console.info('Notification sent!');
 
             }
@@ -146,8 +146,8 @@ export class UserService {
 
         // Get top-rated products by category for the user
         const topRatedProducts = await this.productService.getTopRatedProductByCategory(user['_id']);
-        console.info("topRatedProducts", topRatedProducts)
-        // Build the HTML content with product categories
+
+        // Content with product categories
         const categoryMap: Record<string, string[]> = {};
 
         topRatedProducts.forEach((product) => {
@@ -155,11 +155,16 @@ export class UserService {
                 if (!categoryMap[product.category]) {
                     categoryMap[product.category] = [];
                 }
-                categoryMap[product.category].push(product.name); // Add only product names
+
+                // Generate star ratings based on product rating (out of 5)
+                const stars = '⭐'.repeat(Math.round(product.rating));
+
+                // Add product name with stars
+                categoryMap[product.category].push(`${product.name} (${stars})`);
             }
         });
 
-        // Build the HTML for product recommendations
+        // product recommendations
         let productsHtml = '';
         Object.keys(categoryMap).forEach((category) => {
             productsHtml += `<p><strong>${category}:</strong> ${categoryMap[category].join(', ')}</p>`;
@@ -181,8 +186,6 @@ export class UserService {
         <p><a href="https://website.com">Website</a></p>
         <p>Need help? Contact us at <a href="mailto:support@test.com">support@test.com</a></p>
     `;
-
-        console.info("html ", html)
 
         return { emailSubject, html };
     }
