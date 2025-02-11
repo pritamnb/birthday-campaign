@@ -16,6 +16,9 @@ export class Discount {
 
     @Prop({ default: new Date() })
     issuedAt: Date;
+
+    @Prop({ default: false })
+    isExpired: boolean;
 }
 
 export const DiscountSchema = SchemaFactory.createForClass(Discount);

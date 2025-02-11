@@ -25,4 +25,11 @@ export class UserController {
     async getProductSuggestions(@Param('id') id: string) {
         return this.userService.getProductSuggestions(id);
     }
+
+    @Get(':id/reset')
+    async resetCodeGen(@Param('id') id: string) {
+        console.info("id :: ", id);
+        return this.userService.resetNotifications();
+    }
+
 }

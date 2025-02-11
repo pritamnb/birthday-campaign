@@ -16,6 +16,12 @@ export class User {
 
     @Prop({ type: [String], default: [] })
     preferences: string[];
+
+    @Prop({ default: false })
+    discountGenerated: boolean;
+
+    @Prop({ default: false })
+    notificationSent: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -7,6 +7,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { NotificationService } from 'src/notification/notification.service';
 import * as moment from 'moment';
 import { DiscountService } from 'src/discount/discount.service';
+import { Discount, DiscountDocument } from 'src/discount/discount.schema';
 
 @Injectable()
 export class UserService {
@@ -60,6 +61,7 @@ export class UserService {
 
     /**
      * 
+     * @returns 
      */
 
 
@@ -67,7 +69,7 @@ export class UserService {
         const today = moment().startOf('day');
         const nextWeek = moment(today).add(7, 'days');
 
-        // Extract the month and day for both today and the next week
+        // Extracting the month and day for both today and the next week
         const todayMonthDay = today.format('MM-DD');
         const nextWeekMonthDay = nextWeek.format('MM-DD');
 
@@ -105,12 +107,34 @@ export class UserService {
         console.log('Running cron job to find eligible users...');
         const eligibleUsers = await this.getBirthdayUsers();
         for (const user of eligibleUsers) {
-            const { email } = user;
-            const { emailSubject, html } = await this.generateTemplate(user);
+            if (!user.notificationSent) {
+                console.info('Notification sending');
+                const { email } = user;
+                const { emailSubject, html } = await this.generateTemplate(user);
 
-            await this.notificationService.sendEmail(email, emailSubject, html);
+                await this.notificationService.sendEmail(email, emailSubject, html);
+                await this.notificationStatusUpdate(user['_id']);
+                console.info('Notification sent!');
+
+            }
+
         }
     }
+    /**
+     * 
+     * @param userId 
+     * It will update notification status to true when notification is sent
+     */
+    private async notificationStatusUpdate(userId: string) {
+        const isUser = await this.userModel.findById(userId);
+        if (isUser) {
+            isUser.notificationSent = true;
+            isUser.discountGenerated = true;
+            await isUser.save();
+        }
+    }
+
+
     private async generateTemplate(user: User) {
         const { birthdate, name } = user;
         const startDate = moment(birthdate).subtract(7, 'days').format('MMMM D') + ' ' + moment().format('YYYY'); // 7 days before birthday
@@ -137,4 +161,54 @@ export class UserService {
         `
         return { emailSubject, html };
     }
+
+
+    async resetNotifications() {
+
+        const today = moment().startOf('day');
+        const nextWeek = moment(today).add(7, 'days');
+
+        // Extracting the month and day for both today and the next week
+        const todayMonthDay = today.format('MM-DD');
+        const nextWeekMonthDay = nextWeek.format('MM-DD');
+        // const users = await this.userModel.find({ notificationSent: true });
+        const users = await this.userModel.find({
+            $expr: {
+                $or: [
+                    {
+                        $lt: [
+                            { $dateToString: { format: "%m-%d", date: "$birthdate" } },
+                            todayMonthDay // Birthdate is before today
+                        ]
+                    },
+                    {
+                        $gt: [
+                            { $dateToString: { format: "%m-%d", date: "$birthdate" } },
+                            nextWeekMonthDay // Birthdate is after the next week
+                        ]
+                    }
+                ]
+            }
+        });
+
+        console.info("users : ", users)
+        for (const user of users) {
+            const birthday = moment(user.birthdate);
+
+            // If birthday week has passed, reset the notification flag
+            if (birthday.isBefore(today, 'day')) {
+                user.notificationSent = false;
+                user.discountGenerated = false;
+                await this.discountService.expireCode(user['_id']);
+                await user.save();
+                console.log(`Reset notification flag for user: ${user.email}`);
+            }
+        }
+    }
+    @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+    async handleDailyReset() {
+        await this.resetNotifications();
+    }
+
+
 }
