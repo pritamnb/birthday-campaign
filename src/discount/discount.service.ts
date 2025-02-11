@@ -9,13 +9,25 @@ export class DiscountService {
         @InjectModel(Discount.name) private discountModel: Model<DiscountDocument>
     ) { }
 
+    /**
+     * To generate a discount code
+     * @param userId 
+     * @returns new code or old unused code
+     */
     async generateDiscountCode(userId: string): Promise<string> {
+        const existingDiscount = await this.discountModel.findOne({ userId, used: false });
+
+        if (existingDiscount) {
+            return existingDiscount.code;
+        }
+
         const discountCode = `BDAY-${Math.random().toString(36).substring(7).toUpperCase()}`;
 
         await this.discountModel.create({ userId, code: discountCode, used: false });
 
         return discountCode;
     }
+
 
     async validateDiscountCode(userId: string, discountCode: string): Promise<boolean> {
         const discount = await this.discountModel.findOne({ userId, code: discountCode, used: false });

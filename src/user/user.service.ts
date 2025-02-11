@@ -8,20 +8,20 @@ import { NotificationService } from 'src/notification/notification.service';
 import * as moment from 'moment';
 import { DiscountService } from 'src/discount/discount.service';
 import { Discount, DiscountDocument } from 'src/discount/discount.schema';
+import { ProductService } from 'src/product/product.service';
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectModel(User.name) private userModel: Model<UserDocument>,
         private notificationService: NotificationService,
-        private discountService: DiscountService
+        private discountService: DiscountService,
+        private productService: ProductService
     ) { }
 
     async findById(id: string): Promise<User | null> {
         return this.userModel.findById(id).exec();
     }
-
-
 
     async create(createUserDto: CreateUserDto): Promise<User> {
         const createdUser = new this.userModel(createUserDto);
@@ -107,13 +107,13 @@ export class UserService {
         console.log('Running cron job to find eligible users...');
         const eligibleUsers = await this.getBirthdayUsers();
         for (const user of eligibleUsers) {
-            if (!user.notificationSent) {
+            if (!user.notificationSent && !user.discountGenerated) {
                 console.info('Notification sending');
                 const { email } = user;
                 const { emailSubject, html } = await this.generateTemplate(user);
 
                 await this.notificationService.sendEmail(email, emailSubject, html);
-                await this.notificationStatusUpdate(user['_id']);
+                // await this.notificationStatusUpdate(user['_id']);
                 console.info('Notification sent!');
 
             }
@@ -135,30 +135,55 @@ export class UserService {
     }
 
 
+
     private async generateTemplate(user: User) {
         const { birthdate, name } = user;
         const startDate = moment(birthdate).subtract(7, 'days').format('MMMM D') + ' ' + moment().format('YYYY'); // 7 days before birthday
         const endDate = moment(birthdate).add(1, 'days').format('MMMM D') + ' ' + moment().format('YYYY'); // 1 day after birthday
 
         const discountCode = await this.discountService.generateDiscountCode(user['_id']);
-        const emailSubject = `Your Birthday is Coming Up! Here’s a Special Gift for You !`;
+        const emailSubject = `Your Birthday is Coming Up! Here’s a Special Gift for You!`;
+
+        // Get top-rated products by category for the user
+        const topRatedProducts = await this.productService.getTopRatedProductByCategory(user['_id']);
+        console.info("topRatedProducts", topRatedProducts)
+        // Build the HTML content with product categories
+        const categoryMap: Record<string, string[]> = {};
+
+        topRatedProducts.forEach((product) => {
+            if (product.category) {
+                if (!categoryMap[product.category]) {
+                    categoryMap[product.category] = [];
+                }
+                categoryMap[product.category].push(product.name); // Add only product names
+            }
+        });
+
+        // Build the HTML for product recommendations
+        let productsHtml = '';
+        Object.keys(categoryMap).forEach((category) => {
+            productsHtml += `<p><strong>${category}:</strong> ${categoryMap[category].join(', ')}</p>`;
+        });
         const html = `
-            <p>Dear <strong>${name}</strong>,</p>
-            <p>Your birthday is just around the corner, and we couldn’t be more excited to celebrate with you! 🎉</p>
-            <p>To make your special day even better, we’re giving you an <strong>exclusive birthday discount code</strong> that you can use during the week of your birthday.</p>
-            <h2 style="color: #ff6600;">${discountCode}</h2>
-            <p>📅 <strong>Valid From:</strong> ${startDate}</p>
-            <p>⏳ <strong>Expires:</strong> ${endDate}</p>
-            <p>💡 <strong>How to Redeem:</strong> Use this code at checkout when shopping on our app or website.</p>
-            <p>We've also selected some amazing products that we think you’ll love!</p>
-            
-            <br>
-            <p>We hope you have an amazing celebration! 🎂</p>
-            <p>Best Wishes,</p>
-            <p><strong>Company Name</strong></p>
-            <p><a href="https://website.com">Website</a></p>
-            <p>Need help? Contact us at <a href="mailto:support@test.com">support@test.com</a></p>
-        `
+        <p>Dear <strong>${name}</strong>,</p>
+        <p>Your birthday is just around the corner, and we couldn’t be more excited to celebrate with you! 🎉</p>
+        <p>To make your special day even better, we’re giving you an <strong>exclusive birthday discount code</strong> that you can use during the week of your birthday.</p>
+        <h2 style="color: #ff6600;">${discountCode}</h2>
+        <p>📅 <strong>Valid From:</strong> ${startDate}</p>
+        <p>⏳ <strong>Expires:</strong> ${endDate}</p>
+        <p>💡 <strong>How to Redeem:</strong> Use this code at checkout when shopping on our app or website.</p>
+        <p>We've also selected some amazing products that we think you’ll love:</p>
+        ${productsHtml}
+        <br>
+        <p>We hope you have an amazing celebration! 🎂</p>
+        <p>Best Wishes,</p>
+        <p><strong>Company Name</strong></p>
+        <p><a href="https://website.com">Website</a></p>
+        <p>Need help? Contact us at <a href="mailto:support@test.com">support@test.com</a></p>
+    `;
+
+        console.info("html ", html)
+
         return { emailSubject, html };
     }
 
