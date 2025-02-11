@@ -19,13 +19,13 @@ export class NotificationService {
         });
     }
 
-    async sendEmail(to: string, subject: string, text: string) {
+    async sendEmail(to: string, subject: string, html: string) {
         try {
             const mailOptions = {
                 from: process.env.EMAIL_USER,
                 to,
                 subject,
-                text,
+                html
             };
 
             const info = await this.transporter.sendMail(mailOptions);

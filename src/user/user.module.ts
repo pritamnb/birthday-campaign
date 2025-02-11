@@ -4,11 +4,13 @@ import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { User, UserSchema } from './user.schema';
 import { NotificationModule } from 'src/notification/notification.module';
+import { DiscountModule } from 'src/discount/discount.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-    NotificationModule
+    NotificationModule,
+    DiscountModule
   ],
   controllers: [UserController],
   providers: [UserService],

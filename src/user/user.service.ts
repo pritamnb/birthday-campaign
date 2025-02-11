@@ -6,17 +6,17 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { NotificationService } from 'src/notification/notification.service';
 import * as moment from 'moment';
+import { DiscountService } from 'src/discount/discount.service';
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectModel(User.name) private userModel: Model<UserDocument>,
-        private notificationService: NotificationService
+        private notificationService: NotificationService,
+        private discountService: DiscountService
     ) { }
 
     async findById(id: string): Promise<User | null> {
-        // const eligibleUsers = await this.getEligible();
-        // console.log('Eligible users found:', eligibleUsers);
         return this.userModel.findById(id).exec();
     }
 
@@ -93,14 +93,6 @@ export class UserService {
                     ]
                 }
             }).exec();
-            for (const user of users) {
-                const emailSubject = 'Happy Birthday! Enjoy Your Special Day!';
-                const emailText = `Hello ${user.name},\n\nWe wish you a very Happy Birthday! Enjoy your special day with some great product recommendations from us.\n\nBest regards,\nYour Farmers Market Team`;
-
-                // Send email to each eligible user
-                await this.notificationService.sendEmail(user.email, emailSubject, emailText);
-            }
-            console.log('Found users:', users);
             return users;
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -112,13 +104,37 @@ export class UserService {
     async handleCron() {
         console.log('Running cron job to find eligible users...');
         const eligibleUsers = await this.getBirthdayUsers();
-        console.log('Eligible users found:', eligibleUsers);
         for (const user of eligibleUsers) {
-            const emailSubject = 'Happy Birthday! Enjoy Your Special Day!';
-            const emailText = `Hello ${user.name},\n\nWe wish you a very Happy Birthday! Enjoy your special day with some great product recommendations from us.\n\nBest regards,\nYour Farmers Market Team`;
+            const { email } = user;
+            const { emailSubject, html } = await this.generateTemplate(user);
 
-            // Send email to each eligible user
-            await this.notificationService.sendEmail(user.email, emailSubject, emailText);
+            await this.notificationService.sendEmail(email, emailSubject, html);
         }
+    }
+    private async generateTemplate(user: User) {
+        const { birthdate, name } = user;
+        const startDate = moment(birthdate).subtract(7, 'days').format('MMMM D') + ' ' + moment().format('YYYY'); // 7 days before birthday
+        const endDate = moment(birthdate).add(1, 'days').format('MMMM D') + ' ' + moment().format('YYYY'); // 1 day after birthday
+
+        const discountCode = await this.discountService.generateDiscountCode(user['_id']);
+        const emailSubject = `Your Birthday is Coming Up! Here’s a Special Gift for You !`;
+        const html = `
+            <p>Dear <strong>${name}</strong>,</p>
+            <p>Your birthday is just around the corner, and we couldn’t be more excited to celebrate with you! 🎉</p>
+            <p>To make your special day even better, we’re giving you an <strong>exclusive birthday discount code</strong> that you can use during the week of your birthday.</p>
+            <h2 style="color: #ff6600;">${discountCode}</h2>
+            <p>📅 <strong>Valid From:</strong> ${startDate}</p>
+            <p>⏳ <strong>Expires:</strong> ${endDate}</p>
+            <p>💡 <strong>How to Redeem:</strong> Use this code at checkout when shopping on our app or website.</p>
+            <p>We've also selected some amazing products that we think you’ll love!</p>
+            
+            <br>
+            <p>We hope you have an amazing celebration! 🎂</p>
+            <p>Best Wishes,</p>
+            <p><strong>Company Name</strong></p>
+            <p><a href="https://website.com">Website</a></p>
+            <p>Need help? Contact us at <a href="mailto:support@test.com">support@test.com</a></p>
+        `
+        return { emailSubject, html };
     }
 }

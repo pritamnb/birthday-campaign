@@ -13,7 +13,7 @@ export class UserController {
 
     @Get()
     async getBirthdayUsers() {
-        return this.userService.getBirthdayUsers();
+        return this.userService.handleCron();
     }
 
     @Post()

@@ -9,6 +9,7 @@ import { NotificationModule } from './notification/notification.module';
 import { RecommendationModule } from './recommendation/recommendation.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
+import { DiscountModule } from './discount/discount.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -17,7 +18,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     UserModule,
     CampaignModule,
     NotificationModule,
-    RecommendationModule,],
+    RecommendationModule,
+    DiscountModule],
   controllers: [AppController],
   providers: [AppService],
 })
