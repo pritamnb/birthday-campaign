@@ -1,0 +1,86 @@
+{
+    "info": {
+        "_postman_id": "bd1f1d4c-1234-5678-9101-abcdef123456",
+        "name": "Birthday Campaign API",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Get User by ID",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/users/:id",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "users",
+                        ":id"
+                    ],
+                    "variable": [
+                        {
+                            "key": "id",
+                            "value": "60d5f9b6e8140b001c4e34d2"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Get Eligible Users",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/users/eligible",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "users",
+                        "eligible"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Start Campaign",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/campaign/start",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "campaign",
+                        "start"
+                    ]
+                },
+                "body": {
+                    "mode": "raw",
+                    "raw": "{}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:3000"
+        }
+    ]
+}
