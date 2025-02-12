@@ -18,6 +18,7 @@ export class UserController {
         private readonly authService: AuthService
     ) { }
 
+    // Bearer required endpoints
     /**
      * @description Get the details of the authenticated user
      * @param req Express Request object containing the user's JWT
@@ -29,66 +30,67 @@ export class UserController {
     @ApiOperation({ summary: 'Get authenticated user details' })
     @ApiResponse({ status: 200, description: 'User details fetched successfully' })
     @ApiResponse({ status: 404, description: 'User not found' })
-    async getProfile(@Req() req: Request | any, @Res() res: Response) {
+    async getProfile(
+        @Req() req: Request | any,
+        @Res() res: Response
+    ) {
         const { logger } = res.locals;
-
         try {
-            // Extract user ID from the JWT token payload
-            const userId = req?.user['_id']; // Make sure JwtAuthGuard adds user info to request object
-            console.log("userId : ", req.user);
-
+            const userId = req?.user?._id; //  user id from token
             const user = await this.userService.findById(userId);
-            if (!user) {
-                return res.send(SystemResponse.notFoundError('User not found!', user));
+
+            if (!user) return res.send(SystemResponse.notFoundError('User not found!', user));
+
+            logger.info({ message: 'User fetched successfully', data: user, });
+
+
+            const userData = {
+                name: user.name,
+                email: user.email,
+                birthdate: user.birthdate,
+                preferences: user.preferences
             }
+            return res.send(SystemResponse.success('User fetched successfully', userData));
 
-            logger.info({
-                message: 'User fetched successfully',
-                data: user,
-            });
-            const {
-                name,
-                email,
-                birthdate,
-                preferences
-            } = user
-
-            return res.send(SystemResponse.success('User fetched successfully', {
-                name,
-                email,
-                birthdate,
-                preferences
-            }));
         } catch (err) {
             return res.send(SystemResponse.internalServerError('Error fetching user', err.message));
         }
     }
+
+
     /**
-     * 
-     * @param user id 
-     * @returns get particular user's details
-     */
-    @Get(':id')
+    * @description Get product suggestions based on user's preferences
+    * @returns List of suggested products
+    */
+    @Get('suggestions')
     @UseGuards(JwtAuthGuard)
-    async getUser(
-        @Req() req: Request,
-        @Res() res: Response,
-        @Param('id') id: string
+    @ApiBearerAuth() // Indicates token is required
+    @ApiOperation({ summary: 'Get product suggestions based on user preferences' })
+    @ApiResponse({ status: 200, description: 'Product suggestions fetched successfully' })
+    @ApiResponse({ status: 404, description: 'Not found' })
+    async getProductSuggestions(
+        @Req() req: Request | any,
+        @Res() res: Response
     ) {
         const { logger } = res.locals;
+
         try {
-            const user = await this.userService.findById(id);
-            if (!user) return res.send(SystemResponse.notFoundError('User not found!', user))
-            logger.info({
-                message: 'User fetched successfully',
-                data: [],
-                option: [],
-            });
-            return res.send(
-                SystemResponse.success('User fetched successfully', user),
-            );
+
+            const userId = req?.user?._id; // userid from token
+
+            if (!userId) return res.send(SystemResponse.notFoundError('User ID not found in the token!', userId));
+
+            const products = await this.userService.getProductSuggestions(userId);
+
+            if (!products) return res.send(SystemResponse.notFoundError('No products found for the user!', products));
+
+
+            logger.info({ message: 'Products fetched successfully!', data: products });
+
+            return res.send(SystemResponse.success('Products fetched successfully', products));
+
         } catch (err) {
-            return res.send(SystemResponse.internalServerError('Error', err.message));
+            return res.send(SystemResponse.internalServerError('Error fetching product suggestions', err.message));
         }
     }
 
@@ -111,6 +113,9 @@ export class UserController {
             },
         },
     })
+    @ApiOperation({ summary: 'User Creation' })
+    @ApiResponse({ status: 200, description: 'User created successfully' })
+    @ApiResponse({ status: 404, description: 'Not found' })
     async createUser(
         @Req() req: Request,
         @Res() res: Response,
@@ -126,8 +131,7 @@ export class UserController {
             // Create the user
             const isUserCreated = await this.userService.create(createUserDto);
 
-            if (!isUserCreated)
-                return res.send(SystemResponse.notFoundError('Unable to create user!', isUserCreated));
+            if (!isUserCreated) return res.send(SystemResponse.notFoundError('Unable to create user!', isUserCreated));
 
             // Generate JWT token
             const token = await this.authService.generateToken(isUserCreated);
@@ -137,11 +141,10 @@ export class UserController {
                 data: [],
                 option: [],
             });
-            const { name, email } = isUserCreated;
-            return res.send(
+            const userData = { name: isUserCreated?.name, email: isUserCreated?.email }
 
-                SystemResponse.success('User created successfully!', { user: { name, email }, token }),
-            );
+            return res.send(SystemResponse.success('User created successfully!', { userData, token }));
+
         } catch (err) {
             return res.send(SystemResponse.internalServerError('Error', err.message));
         }
@@ -166,6 +169,10 @@ export class UserController {
             },
         },
     })
+
+    @ApiOperation({ summary: 'Login' })
+    @ApiResponse({ status: 200, description: 'Logged in successfully' })
+    @ApiResponse({ status: 404, description: 'Not found' })
     async login(@Body() loginDto: LoginDto, @Res() res: Response) {
         const { logger } = res.locals;
 
@@ -191,43 +198,26 @@ export class UserController {
                 data: [],
                 option: [],
             });
+            const { _id,
+                name,
+                email,
+                birthdate,
+                preferences } = user
 
-            return res.send(SystemResponse.success('Login successful!', { user, token }));
+            const userData = {
+                _id,
+                name,
+                email,
+                birthdate,
+                preferences
+            }
+            return res.send(SystemResponse.success('Login successful!', { userData, token }));
         } catch (err) {
             return res.send(SystemResponse.internalServerError('Error', err.message));
         }
     }
 
 
-    /**
-     * 
-     * @returns suggestion on products based on user's preferences
-     */
-    @Get(':id/suggestions')
-    async getProductSuggestions(
-        @Req() req: Request,
-        @Res() res: Response,
-        @Param('id') id: string
-    ) {
-
-        const { logger } = res.locals;
-        try {
-            const isUser = await this.userService.getProductSuggestions(id);
-
-            if (!isUser) return res.send(SystemResponse.notFoundError('No user found!', isUser));
-
-            logger.info({
-                message: 'Products fetch successfully!',
-                data: [],
-                option: [],
-            });
-            return res.send(
-                SystemResponse.success('Products fetch successfully!', isUser),
-            );
-        } catch (err) {
-            return res.send(SystemResponse.internalServerError('Error', err.message));
-        }
-    }
 
 
     /**
@@ -235,6 +225,9 @@ export class UserController {
      * who has their birthday in between next 7 days
      */
     @Get()
+    @ApiOperation({ summary: 'Get users who has birthday in this week' })
+    @ApiResponse({ status: 200, description: 'Users fetched successfully' })
+    @ApiResponse({ status: 404, description: 'Not found' })
     async getBirthdayUsers(
         @Req() req: Request,
         @Res() res: Response,
@@ -264,7 +257,7 @@ export class UserController {
      * 
      *API created to reset all the users code and notification flags to default 
      */
-    @Get(':id/reset')
+    @Get('reset')
     async resetCodeGen(
         @Req() req: Request,
         @Res() res: Response,
@@ -273,7 +266,7 @@ export class UserController {
 
         this.userService.resetNotifications();
         return res.send(
-            SystemResponse.success('Users who do not have their birthdays in next 7 days are set to default successfully!')
+            SystemResponse.success('Notification state reset successfully!')
         )
     }
 

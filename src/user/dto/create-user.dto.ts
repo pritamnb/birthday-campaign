@@ -1,5 +1,5 @@
 
-import { IsString, IsEmail, IsDateString, IsOptional, IsArray } from 'class-validator';
+import { IsString, IsEmail, IsDateString, IsOptional, IsArray, IsStrongPassword } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 
@@ -8,11 +8,13 @@ export class CreateUserDto {
     @ApiProperty({
         description: 'Name of the user',
     })
+    @IsString()
     name: string;
 
     @ApiProperty({
         description: 'Email of the user',
     })
+    @IsEmail()
     email: string;
 
     @ApiProperty({
@@ -21,9 +23,9 @@ export class CreateUserDto {
     password: string;
 
     @ApiProperty({
-        description: 'Birthdate of the user',
-        type: String, // You could also use Date, but it's better to use string for Swagger
+        description: 'Birthdate of the user'
     })
+    @IsDateString()
     birthdate: string;
 
 
@@ -31,13 +33,13 @@ export class CreateUserDto {
     @IsArray()
     @ApiProperty({
         description: 'User preferences',
-        enum: ['vegetables',
+        enum: [
+            'vegetables',
             'dairy',
             'meat',
             'fruits',
             'Seafood',
-            'Grains',
-            'Dairy'
+            'Grains'
         ],
         isArray: true,
     })

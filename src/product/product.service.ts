@@ -59,6 +59,14 @@ export class ProductService {
             },
             {
                 $replaceRoot: { newRoot: "$topProduct" }  // Replace root with the top product details
+            },
+            {
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    category: 1,
+                    rating: 1
+                }
             }
         ]);
 

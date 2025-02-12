@@ -14,7 +14,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     }
 
     async validate(payload: any) {
-        // Here, you can perform user validation (like checking if user exists in DB)
         return payload; // Return the decoded JWT payload (contains user info)
     }
 }
