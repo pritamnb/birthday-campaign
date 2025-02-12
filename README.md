@@ -134,3 +134,5 @@ http://localhost:3000/api
 - Suggestions of the product will be given to the user based on their preferences
 - If user's birthday passed then the discount code used/ unused will expires.
 
+## Example of an Email template
+![Performance Report](/email.png)

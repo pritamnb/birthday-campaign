@@ -3,7 +3,7 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Request, Response } from 'express';
 import { SystemResponse } from 'src/libs/response-handler';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('User Services')
 @Controller('user')
@@ -43,6 +43,20 @@ export class UserController {
      * Creates new user
      */
     @Post()
+    @ApiBody({
+        description: 'User creation data',
+        type: CreateUserDto,
+        examples: {
+            'application/json': {
+                value: {
+                    name: "Test",
+                    email: "test@gmail.com",
+                    birthdate: "1997-02-15",
+                    preferences: ["vegetables", "dairy"]
+                }
+            }
+        }
+    })
     async createUser(
         @Req() req: Request,
         @Res() res: Response,
@@ -104,8 +118,8 @@ export class UserController {
     ) {
         const { logger } = res.locals;
         try {
-            const users = await this.userService.getBirthdayUsers();
-            // const users: any = await this.userService.handleCron(); // To run the cron job manually Not recommended
+            // const users = await this.userService.getBirthdayUsers();
+            const users: any = await this.userService.handleCron(); // To run the cron job manually Not recommended
 
             if (!users) return res.send(SystemResponse.notFoundError('Users not found!', users))
 
