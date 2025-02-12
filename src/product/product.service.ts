@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Product, ProductDocument } from './product.schema';
@@ -33,7 +33,7 @@ export class ProductService {
         // User and their preferences
         const user = await this.userModel.findById(userId);
         if (!user || !user.preferences || user.preferences.length === 0) {
-            throw new Error('User not found or no preferences set');
+            throw new NotFoundException('User not found or no preferences set');
         }
 
         // case-insensitive regex match

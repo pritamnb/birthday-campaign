@@ -5,11 +5,7 @@ import { DiscountService } from './discount.service';
 export class DiscountController {
     constructor(private readonly discountService: DiscountService) { }
 
-    // @Get('/generate/:userId')
-    // async generateDiscount(@Param('userId') userId: string) {
-    //     const discountCode = await this.discountService.generateDiscountCode(userId);
-    //     return { discountCode, message: 'Discount code generated successfully' };
-    // }
+
 
     @Get('/redeem/:userId/:code')
     async redeemDiscount(@Param('userId') userId: string, @Param('code') code: string) {

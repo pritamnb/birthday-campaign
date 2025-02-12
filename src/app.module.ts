@@ -9,10 +9,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
 import { DiscountModule } from './discount/discount.module';
 import { ProductModule } from './product/product.module';
+import configurations from './config/configuration';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRoot(process.env.MONGO_URI || 'mongodb://localhost:27017/birthdayCampaign'),
+    MongooseModule.forRoot(configurations.mongo),
+
+    // MongooseModule.forRoot(process.env.MONGO_URI || 'mongodb://localhost:27017/birthdayCampaign'),
     ScheduleModule.forRoot(),
     UserModule,
     NotificationModule,

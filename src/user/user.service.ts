@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Cron, CronExpression } from '@nestjs/schedule';
@@ -6,6 +6,7 @@ import { NotificationService } from 'src/notification/notification.service';
 import { DiscountService } from 'src/discount/discount.service';
 import { ProductService } from 'src/product/product.service';
 import * as moment from 'moment';
+import { Product } from 'src/product/product.schema';
 
 @Injectable()
 export class UserService {
@@ -24,52 +25,16 @@ export class UserService {
         return this.userRepository.create(createUserDto);
     }
 
-    async getProductSuggestions(userId: string): Promise<string[]> {
-        const user = await this.userRepository.findById(userId);
-
-        if (!user) {
-            throw new Error('User not found');
-        }
-
-        return this.getSuggestionsBasedOnPreferences(user.preferences);
+    async getProductSuggestions(userId: string): Promise<Product[]> {
+        return await this.productService.getTopRatedProductByCategory(userId);
     }
 
-    private getSuggestionsBasedOnPreferences(preferences: string[]): string[] {
-        const allProducts = {
-            fruits: ['Apple', 'Banana', 'Orange', 'Mango'],
-            vegetables: ['Carrot', 'Potato', 'Spinach', 'Tomato'],
-            dairy: ['Milk', 'Cheese', 'Yogurt'],
-        };
 
-        const suggestedProducts: string[] = [];
-
-        preferences.forEach((preference) => {
-            if (allProducts[preference]) {
-                suggestedProducts.push(...allProducts[preference]);
-            }
-        });
-
-        return suggestedProducts;
-    }
 
     async getBirthdayUsers(): Promise<any> {
         return this.userRepository.getBirthdayUsers();
     }
 
-    @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-    async handleCron() {
-        console.log('Running cron job to find eligible users...');
-        try {
-            const eligibleUsers = await this.getBirthdayUsers();
-            for (const user of eligibleUsers) {
-                if (!user.notificationSent && !user.discountGenerated) {
-                    await this.sendBirthdayNotification(user);
-                }
-            }
-        } catch (error) {
-            console.error('Error in cron job:', error);
-        }
-    }
 
     private async sendBirthdayNotification(user: any) {
         try {
@@ -151,4 +116,23 @@ export class UserService {
     async resetNotifications() {
         await this.userRepository.resetNotifications();
     }
+
+
+
+    @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+    async handleCron() {
+        console.log('Running cron job to find eligible users...');
+        try {
+            const eligibleUsers = await this.getBirthdayUsers();
+            for (const user of eligibleUsers) {
+                if (!user.notificationSent && !user.discountGenerated) {
+                    await this.sendBirthdayNotification(user);
+                }
+            }
+            await this.resetNotifications();
+        } catch (error) {
+            console.error('Error in cron job:', error);
+        }
+    }
+
 }
