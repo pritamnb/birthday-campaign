@@ -3,11 +3,18 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Request, Response } from 'express';
 import { SystemResponse } from 'src/libs/response-handler';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('User Services')
 @Controller('user')
 export class UserController {
     constructor(private readonly userService: UserService) { }
 
+    /**
+     * 
+     * @param user id 
+     * @returns get particular user's details
+     */
     @Get(':id')
     async getUser(
         @Req() req: Request,
@@ -31,29 +38,10 @@ export class UserController {
         }
     }
 
-    @Get()
-    async getBirthdayUsers(
-        @Req() req: Request,
-        @Res() res: Response,
-    ) {
-        const { logger } = res.locals;
-        try {
-            const users = await this.userService.getBirthdayUsers();
-            if (!users) return res.send(SystemResponse.notFoundError('Users not found!', users))
 
-            logger.info({
-                message: 'Birthday users fetched successfully',
-                data: [],
-                option: [],
-            });
-            return res.send(
-                SystemResponse.success('Birthday users fetched successfully', users),
-            );
-        } catch (err) {
-            return res.send(SystemResponse.internalServerError('Error', err.message));
-        }
-    }
-
+    /**
+     * Creates new user
+     */
     @Post()
     async createUser(
         @Req() req: Request,
@@ -105,6 +93,40 @@ export class UserController {
         }
     }
 
+
+    /**
+     * API created just for understanding to display list of users who has their birthday in between next 7 days
+     */
+    @Get()
+    async getBirthdayUsers(
+        @Req() req: Request,
+        @Res() res: Response,
+    ) {
+        const { logger } = res.locals;
+        try {
+            const users = await this.userService.getBirthdayUsers();
+            // const users: any = await this.userService.handleCron(); // To run the cron job manually Not recommended
+
+            if (!users) return res.send(SystemResponse.notFoundError('Users not found!', users))
+
+            logger.info({
+                message: 'Birthday users fetched successfully',
+                data: [],
+                option: [],
+            });
+            return res.send(
+                SystemResponse.success('Birthday users fetched successfully', users),
+            );
+        } catch (err) {
+            return res.send(SystemResponse.internalServerError('Error', err.message));
+        }
+    }
+
+
+    /**
+     * 
+     *API created to reset all the users code and notification flags to default 
+     */
     @Get(':id/reset')
     async resetCodeGen(
         @Req() req: Request,
@@ -112,8 +134,10 @@ export class UserController {
         @Param('id') id: string
     ) {
         console.info("id :: ", id);
-        return this.userService.resetNotifications();
-
+        this.userService.resetNotifications();
+        return res.send(
+            SystemResponse.success('Users who do not have their birthdays in next 7 days are set to default successfully!')
+        )
     }
 
 }

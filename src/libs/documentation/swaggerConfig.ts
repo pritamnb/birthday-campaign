@@ -1,7 +1,7 @@
 import { DocumentBuilder } from '@nestjs/swagger';
 
 export const config = new DocumentBuilder()
-  .setTitle('JS-Nest-Boilerplate')
+  .setTitle('Birthday Campaign')
   .setDescription('API description')
   .setVersion('1.0')
   .addBearerAuth(
@@ -13,6 +13,6 @@ export const config = new DocumentBuilder()
       description: 'Enter JWT token',
       in: 'header',
     },
-    'JWT-auth', // This name here is important for matching up with @ApiBearerAuth() in your controller!
+    'JWT-auth', // This name here is important for matching up with @ApiBearerAuth() controller!
   )
   .build();

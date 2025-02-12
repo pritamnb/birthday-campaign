@@ -10,7 +10,9 @@ export class AppController {
   constructor(private readonly appService: AppService) { }
 
   @Get('/health')
-  getHello(@Res() res: Response) {
+  getHello(
+    @Res() res: Response
+  ) {
     return res.send(
       SystemResponse.success('Health-check', this.appService.getHello()),
     );

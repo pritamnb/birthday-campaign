@@ -31,7 +31,7 @@ class SystemResponse {
    * @param {String} message Custom success message.
    * @returns {Object} Formatted object having message, data and status.
    */
-  public static success(message, data) {
+  public static success(message, data = {}) {
     return {
       data: data || {},
       message: message || CodeMessage[StatusCodes.SUCCESS],

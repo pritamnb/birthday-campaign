@@ -9,11 +9,12 @@ services:
       - mongo
     environment:
       - MONGO_URI=mongodb://mongo:27017/birthdayCampaign
-      - EMAIL_USER=your-email@gmail.com
-      - EMAIL_PASS=your-password
+      - EMAIL_USER=pritam.bhalerao9284@gmail.com
+      - EMAIL_PASS=ticz eees rxct bnji
     volumes:
       - .:/app
       - /app/node_modules
+    command: ["sh", "-c", "npm run build && node dist/main.js"]
 
   mongo:
     image: mongo:latest
@@ -22,6 +23,11 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
+      interval: 10s
+      retries: 5
+      start_period: 30s
 
 volumes:
   mongo-data:

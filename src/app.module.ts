@@ -14,8 +14,6 @@ import configurations from './config/configuration';
   imports: [
     ConfigModule.forRoot(),
     MongooseModule.forRoot(configurations.mongo),
-
-    // MongooseModule.forRoot(process.env.MONGO_URI || 'mongodb://localhost:27017/birthdayCampaign'),
     ScheduleModule.forRoot(),
     UserModule,
     NotificationModule,

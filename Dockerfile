@@ -1,18 +1,22 @@
-# Use Node.js LTS version
-FROM node:18-alpine
+FROM node:18
 
 # Set working directory
 WORKDIR /app
 
-# Copy package.json and install dependencies
+# Copy package.json and package-lock.json first (better caching)
 COPY package.json package-lock.json ./
-RUN npm install
 
-# Copy source code
+# Install dependencies
+RUN npm install --only=production
+
+# Copy the rest of the source code
 COPY . .
+
+# Build the TypeScript application
+RUN npm run build
 
 # Expose application port
 EXPOSE 3000
 
 # Start the app
-CMD ["npm", "run", "start"]
+CMD ["node", "dist/main.js"]

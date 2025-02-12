@@ -1,0 +1,267 @@
+[
+    {
+        "name": "Mango",
+        "category": "Fruits",
+        "rating": 5
+    },
+    {
+        "name": "Strawberry",
+        "category": "Fruits",
+        "rating": 4.9
+    },
+    {
+        "name": "Apple",
+        "category": "Fruits",
+        "rating": 4.8
+    },
+    {
+        "name": "Grapes",
+        "category": "Fruits",
+        "rating": 4.7
+    },
+    {
+        "name": "Orange",
+        "category": "Fruits",
+        "rating": 4.6
+    },
+    {
+        "name": "Watermelon",
+        "category": "Fruits",
+        "rating": 4.5
+    },
+    {
+        "name": "Blueberry",
+        "category": "Fruits",
+        "rating": 4.4
+    },
+    {
+        "name": "Peach",
+        "category": "Fruits",
+        "rating": 4.3
+    },
+    {
+        "name": "Pineapple",
+        "category": "Fruits",
+        "rating": 4.2
+    },
+    {
+        "name": "Banana",
+        "category": "Fruits",
+        "rating": 4.1
+    },
+    {
+        "name": "Broccoli",
+        "category": "Vegetables",
+        "rating": 5
+    },
+    {
+        "name": "Spinach",
+        "category": "Vegetables",
+        "rating": 4.9
+    },
+    {
+        "name": "Carrot",
+        "category": "Vegetables",
+        "rating": 4.8
+    },
+    {
+        "name": "Tomato",
+        "category": "Vegetables",
+        "rating": 4.7
+    },
+    {
+        "name": "Cucumber",
+        "category": "Vegetables",
+        "rating": 4.6
+    },
+    {
+        "name": "Bell Pepper",
+        "category": "Vegetables",
+        "rating": 4.5
+    },
+    {
+        "name": "Cabbage",
+        "category": "Vegetables",
+        "rating": 4.4
+    },
+    {
+        "name": "Onion",
+        "category": "Vegetables",
+        "rating": 4.3
+    },
+    {
+        "name": "Garlic",
+        "category": "Vegetables",
+        "rating": 4.2
+    },
+    {
+        "name": "Potato",
+        "category": "Vegetables",
+        "rating": 4.1
+    },
+    {
+        "name": "Almond Milk",
+        "category": "Dairy & Eggs",
+        "rating": 5
+    },
+    {
+        "name": "Whole Milk",
+        "category": "Dairy & Eggs",
+        "rating": 4.9
+    },
+    {
+        "name": "Skim Milk",
+        "category": "Dairy & Eggs",
+        "rating": 4.8
+    },
+    {
+        "name": "Soy Milk",
+        "category": "Dairy & Eggs",
+        "rating": 4.7
+    },
+    {
+        "name": "Coconut Milk",
+        "category": "Dairy & Eggs",
+        "rating": 4.6
+    },
+    {
+        "name": "Mozzarella",
+        "category": "Dairy & Eggs",
+        "rating": 5
+    },
+    {
+        "name": "Cheddar",
+        "category": "Dairy & Eggs",
+        "rating": 4.9
+    },
+    {
+        "name": "Parmesan",
+        "category": "Dairy & Eggs",
+        "rating": 4.8
+    },
+    {
+        "name": "Feta",
+        "category": "Dairy & Eggs",
+        "rating": 4.7
+    },
+    {
+        "name": "Swiss",
+        "category": "Dairy & Eggs",
+        "rating": 4.6
+    },
+    {
+        "name": "Chicken Breast",
+        "category": "Meat & Poultry",
+        "rating": 5
+    },
+    {
+        "name": "Chicken Thigh",
+        "category": "Meat & Poultry",
+        "rating": 4.9
+    },
+    {
+        "name": "Whole Chicken",
+        "category": "Meat & Poultry",
+        "rating": 4.8
+    },
+    {
+        "name": "Chicken Wings",
+        "category": "Meat & Poultry",
+        "rating": 4.7
+    },
+    {
+        "name": "Steak",
+        "category": "Meat & Poultry",
+        "rating": 5
+    },
+    {
+        "name": "Ground Beef",
+        "category": "Meat & Poultry",
+        "rating": 4.9
+    },
+    {
+        "name": "Beef Ribs",
+        "category": "Meat & Poultry",
+        "rating": 4.8
+    },
+    {
+        "name": "Salmon",
+        "category": "Seafood",
+        "rating": 5
+    },
+    {
+        "name": "Tuna",
+        "category": "Seafood",
+        "rating": 4.9
+    },
+    {
+        "name": "Cod",
+        "category": "Seafood",
+        "rating": 4.8
+    },
+    {
+        "name": "Mackerel",
+        "category": "Seafood",
+        "rating": 4.7
+    },
+    {
+        "name": "Tilapia",
+        "category": "Seafood",
+        "rating": 4.6
+    },
+    {
+        "name": "Shrimp",
+        "category": "Seafood",
+        "rating": 5
+    },
+    {
+        "name": "Lobster",
+        "category": "Seafood",
+        "rating": 4.9
+    },
+    {
+        "name": "Crab",
+        "category": "Seafood",
+        "rating": 4.8
+    },
+    {
+        "name": "Oysters",
+        "category": "Seafood",
+        "rating": 4.7
+    },
+    {
+        "name": "Basmati Rice",
+        "category": "Grains & Pasta",
+        "rating": 5
+    },
+    {
+        "name": "Jasmine Rice",
+        "category": "Grains & Pasta",
+        "rating": 4.9
+    },
+    {
+        "name": "Brown Rice",
+        "category": "Grains & Pasta",
+        "rating": 4.8
+    },
+    {
+        "name": "White Rice",
+        "category": "Grains & Pasta",
+        "rating": 4.7
+    },
+    {
+        "name": "Spaghetti",
+        "category": "Grains & Pasta",
+        "rating": 5
+    },
+    {
+        "name": "Penne",
+        "category": "Grains & Pasta",
+        "rating": 4.9
+    },
+    {
+        "name": "Fusilli",
+        "category": "Grains & Pasta",
+        "rating": 4.8
+    }
+]

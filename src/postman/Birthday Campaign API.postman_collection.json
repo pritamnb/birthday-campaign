@@ -1,0 +1,252 @@
+{
+	"info": {
+		"_postman_id": "c71197f2-ddd6-4f4b-962a-1cf984937f55",
+		"name": "Birthday Campaign API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7681856"
+	},
+	"item": [
+		{
+			"name": "discount",
+			"item": [
+				{
+					"name": "Reedem Code",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/discount/redeem/67abfca29f48971e36c18b18/BDAY-TCQJ5",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"discount",
+								"redeem",
+								"67abfca29f48971e36c18b18",
+								"BDAY-TCQJ5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Code Availability",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/discount/available/67abfca29f48971e36c18b18",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"discount",
+								"available",
+								"67abfca29f48971e36c18b18"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Get User by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/user/67abfca29f48971e36c18b18",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"67abfca29f48971e36c18b18"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Suggestions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/user/67abfca29f48971e36c18b18/suggestions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"67abfca29f48971e36c18b18",
+								"suggestions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Test\",\r\n  \"email\": \"test@gmail.com\",\r\n  \"birthdate\": \"1997-02-15\",\r\n  \"preferences\": [\"vegetables\", \"dairy\"]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Eligible Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/user",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Code generated",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/user/67ab76bc93c80a40baa03727/reset",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"67ab76bc93c80a40baa03727",
+								"reset"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Load Products",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n   \r\n  { \"name\": \"Salmon\", \"category\": \"Seafood\", \"rating\": 5 },\r\n  { \"name\": \"Tuna\", \"category\": \"Seafood\", \"rating\": 4.9 },\r\n  { \"name\": \"Cod\", \"category\": \"Seafood\", \"rating\": 4.8 },\r\n  { \"name\": \"Mackerel\", \"category\": \"Seafood\", \"rating\": 4.7 },\r\n  { \"name\": \"Tilapia\", \"category\": \"Seafood\", \"rating\": 4.6 },\r\n\r\n  { \"name\": \"Shrimp\", \"category\": \"Seafood\", \"rating\": 5 },\r\n  { \"name\": \"Lobster\", \"category\": \"Seafood\", \"rating\": 4.9 },\r\n  { \"name\": \"Crab\", \"category\": \"Seafood\", \"rating\": 4.8 },\r\n  { \"name\": \"Oysters\", \"category\": \"Seafood\", \"rating\": 4.7 },\r\n\r\n  { \"name\": \"Basmati Rice\", \"category\": \"Grains & Pasta\", \"rating\": 5 },\r\n  { \"name\": \"Jasmine Rice\", \"category\": \"Grains & Pasta\", \"rating\": 4.9 },\r\n  { \"name\": \"Brown Rice\", \"category\": \"Grains & Pasta\", \"rating\": 4.8 },\r\n  { \"name\": \"White Rice\", \"category\": \"Grains & Pasta\", \"rating\": 4.7 },\r\n\r\n  { \"name\": \"Spaghetti\", \"category\": \"Grains & Pasta\", \"rating\": 5 },\r\n  { \"name\": \"Penne\", \"category\": \"Grains & Pasta\", \"rating\": 4.9 },\r\n  { \"name\": \"Fusilli\", \"category\": \"Grains & Pasta\", \"rating\": 4.8 }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/products/load",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products",
+								"load"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Load Products Copy",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Alice\",\r\n  \"email\": \"alice@example.com\",\r\n  \"birthdate\": \"1992-05-15\",\r\n  \"preferences\": [\"fruits\", \"vegetables\", \"dairy\"]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/products/suggestions/67ab76a993c80a40baa03724",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products",
+								"suggestions",
+								"67ab76a993c80a40baa03724"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/health",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"health"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000"
+		}
+	]
+}
