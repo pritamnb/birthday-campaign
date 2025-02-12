@@ -16,6 +16,11 @@ export class CreateUserDto {
     email: string;
 
     @ApiProperty({
+        description: 'Password',
+    })
+    password: string;
+
+    @ApiProperty({
         description: 'Birthdate of the user',
         type: String, // You could also use Date, but it's better to use string for Swagger
     })

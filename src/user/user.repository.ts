@@ -23,17 +23,33 @@ export class UserRepository {
             this.nextWeekMonthDay // Compared with the next week's month and day
         ]
     }
-    constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) { }
+    constructor(
+        @InjectModel(User.name) private userModel: Model<UserDocument>
+    ) { }
 
     async findById(id: string): Promise<User | null> {
         return this.userModel.findById(id).exec();
     }
 
+    async findEmail(email: string): Promise<User> {
+        const user = await this.userModel.find({ email }).exec();
+        return user[0]
+    }
+
+    /**
+     * 
+     * @param createUserDto details
+     * @returns created user
+     */
     async create(createUserDto: any): Promise<User> {
         const createdUser = new this.userModel(createUserDto);
         return createdUser.save();
     }
 
+    /**
+     * 
+     * @returns List all the users who's birthdays are within 7 days
+     */
     async getBirthdayUsers(): Promise<User[]> {
         const today = moment().startOf('day');
         const nextWeek = moment(today).add(7, 'days');
@@ -61,6 +77,12 @@ export class UserRepository {
         }
     }
 
+    /**
+     * To update users notification sent status 
+     * @param userId string
+     * @param notificationSent boolean
+     * @param discountGenerated boolean
+     */
     async updateNotificationStatus(userId: string, notificationSent: boolean, discountGenerated: boolean): Promise<void> {
         const user = await this.userModel.findById(userId);
         if (user) {
@@ -70,6 +92,9 @@ export class UserRepository {
         }
     }
 
+    /**
+     * Filter those users who's birthdate is passed and not within next 7 days
+     */
     async resetNotifications(): Promise<void> {
         const today = moment().startOf('day');
         const nextWeek = moment(today).add(7, 'days');

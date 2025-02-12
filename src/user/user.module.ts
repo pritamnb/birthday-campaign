@@ -7,10 +7,12 @@ import { NotificationModule } from 'src/notification/notification.module';
 import { DiscountModule } from 'src/discount/discount.module';
 import { ProductModule } from '../product/product.module';
 import { UserRepository } from './user.repository';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
     forwardRef(() => ProductModule),
+    forwardRef(() => AuthModule),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     NotificationModule,
     DiscountModule,
