@@ -6,6 +6,7 @@ import { User, UserSchema } from './user.schema';
 import { NotificationModule } from 'src/notification/notification.module';
 import { DiscountModule } from 'src/discount/discount.module';
 import { ProductModule } from '../product/product.module';
+import { UserRepository } from './user.repository';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { ProductModule } from '../product/product.module';
     DiscountModule,
   ],
   controllers: [UserController],
-  providers: [UserService],
+  providers: [UserService, UserRepository],
   exports: [UserService, MongooseModule],
 })
 export class UserModule { }
