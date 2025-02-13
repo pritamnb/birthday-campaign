@@ -9,7 +9,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
 import { DiscountModule } from './discount/discount.module';
 import { ProductModule } from './product/product.module';
-import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 import configurations from './config/configuration';
 import { JwtStrategy } from './auth/jwt.strategy';

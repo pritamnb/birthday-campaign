@@ -3,7 +3,8 @@ import { ProductService } from './product.service';
 import { Product } from './product.schema';
 import { Request, Response } from 'express';
 import { SystemResponse } from 'src/libs/response-handler';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ProductDto } from './dto/product.dto';
 
 @ApiTags('Products')
 
@@ -11,32 +12,29 @@ import { ApiTags } from '@nestjs/swagger';
 export class ProductController {
     constructor(private readonly productService: ProductService) { }
 
-    @Get('/suggestions/:userId')
-    async getUserSuggestions(
-        @Req() req: Request,
-        @Res() res: Response,
-        @Param('userId') userId: string
-    ) {
-        try {
-            const { logger } = res.locals;
 
-            const products = await this.productService.getTopRatedProductByCategory(userId);
-            if (!products) return res.send(SystemResponse.notFoundError('Products not found!', products))
+    @Post('load')
+    @ApiBody({
+        description: 'Create Products',
+        type: ProductDto,
+        examples: {
+            'application/json': {
+                value:
+                    [
+                        {
+                            "name": "string",
+                            "category": "Grains & Pasta",
+                            "rating": 4.8
+                        }
+                    ]
 
-            logger.info({
-                message: 'Products fetched successfully',
-                data: [],
-                option: [],
-            });
-            return res.send(
-                SystemResponse.success('Products fetched successfully', products),
-            );
-        } catch (err) {
-            return res.send(SystemResponse.internalServerError('Error', err.message));
-        }
-    }
+            },
+        },
+    })
+    @ApiOperation({ summary: 'Creates multiple products' })
+    @ApiResponse({ status: 200, description: 'Products loaded successfully' })
+    @ApiResponse({ status: 404, description: 'Not found' })
 
-    @Post('/load')
     async loadProductData(
         @Res() res: Response,
         @Body() products: Product[]

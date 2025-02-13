@@ -5,7 +5,7 @@ This project implements a birthday campaign system using NestJS, TypeScript, Mon
 
 ## Architecture diagram
 
-![Performance Report](/architecture.png)
+![Performance Report](/system_design.png)
 
 
 ## Tech Stack
