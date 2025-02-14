@@ -21,7 +21,12 @@ export class DiscountService {
             return existingDiscount.code;
         }
 
-        const discountCode = `BDAY-${Math.random().toString(36).substring(7).toUpperCase()}`;
+        const discountCode =
+            `BDAY-${Date.now().toString(36)
+                .toUpperCase()}-${Math.random()
+                    .toString(36)
+                    .substring(2, 6)
+                    .toUpperCase()}`;
 
         await this.discountModel.create({ userId, code: discountCode, used: false });
 

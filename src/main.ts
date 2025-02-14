@@ -12,6 +12,13 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   const logInstance = createLogger.createLogInstance(loggerConfig);
+
+  // Attaches a logging middleware to the Express application (app)
+  /**
+   * x-trace-id:
+   * It’s often used for request tracing in distributed systems.
+   * If present, this ID will likely be included in logs for tracking requests across microservices. 
+   * */
   app.use(
     enableLoggerInstance(logInstance, [
       { location: 'headers', key: 'x-trace-id' },

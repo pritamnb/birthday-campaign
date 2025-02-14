@@ -17,6 +17,7 @@ export class DiscountController {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Redeem the code' })
     @ApiResponse({ status: 200, description: 'Discount successfully redeemed!' })
+    @ApiResponse({ status: 400, description: 'Invalid or already used discount code!' })
     @ApiResponse({ status: 404, description: 'Not found' })
     async redeemDiscount(
         @Req() req: Request | any,
