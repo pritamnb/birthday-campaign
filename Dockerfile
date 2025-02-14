@@ -1,7 +1,10 @@
-FROM node:20
+FROM node:22
 
 # Set working directory
 WORKDIR /app
+
+# Installing nest cli globally
+RUN npm install -g @nestjs/cli
 
 # Copy package.json and package-lock.json first for better caching
 COPY package.json package-lock.json ./
