@@ -1,19 +1,25 @@
-FROM node:18
+FROM node:22
 
 # Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json first (better caching)
+# Installing nest cli globally
+RUN npm install -g @nestjs/cli
+
+# Copy package.json and package-lock.json first for better caching
 COPY package.json package-lock.json ./
 
-# Install dependencies
+# Install dependencies in a separate directory to prevent re-installation on code changes
 RUN npm install --only=production
 
-# Copy the rest of the source code
-COPY . .
+# Copy only necessary source files (avoiding node_modules from being overwritten)
+COPY . . 
 
 # Build the TypeScript application
 RUN npm run build
+
+# Remove dev dependencies and clear npm cache
+RUN npm prune --production && npm cache clean --force
 
 # Expose application port
 EXPOSE 3000

@@ -12,10 +12,20 @@
 				{
 					"name": "Reedem Code",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJwcml0YW02NThAZ21haWwuY29tIiwibmFtZSI6IlByaXRhbSIsIl9pZCI6IjY3YWQwYzM5MjQyODIwODVmZDczNjQwZSIsImlhdCI6MTczOTQ4MTk3MCwiZXhwIjoxNzM5NDg1NTcwfQ.aje0LJSzVdf9sonWgp3HoMjd4Mt9MT2C1MMCGHZGmAY",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/discount/redeem/67abfca29f48971e36c18b18/BDAY-TCQJ5",
+							"raw": "{{base_url}}/api/discount/redeem/BDAY-EXBZH",
 							"host": [
 								"{{base_url}}"
 							],
@@ -23,8 +33,7 @@
 								"api",
 								"discount",
 								"redeem",
-								"67abfca29f48971e36c18b18",
-								"BDAY-TCQJ5"
+								"BDAY-EXBZH"
 							]
 						}
 					},
@@ -33,18 +42,27 @@
 				{
 					"name": "Code Availability",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJwcml0YW02NThAZ21haWwuY29tIiwibmFtZSI6IlByaXRhbSIsIl9pZCI6IjY3YWQwYzM5MjQyODIwODVmZDczNjQwZSIsImlhdCI6MTczOTQ4MTk3MCwiZXhwIjoxNzM5NDg1NTcwfQ.aje0LJSzVdf9sonWgp3HoMjd4Mt9MT2C1MMCGHZGmAY",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/discount/available/67abfca29f48971e36c18b18",
+							"raw": "{{base_url}}/api/discount/available",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"discount",
-								"available",
-								"67abfca29f48971e36c18b18"
+								"available"
 							]
 						}
 					},
@@ -56,19 +74,29 @@
 			"name": "User",
 			"item": [
 				{
-					"name": "Get User by ID",
+					"name": "ME",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJwcml0YW02NThAZ21haWwuY29tIiwibmFtZSI6IlByaXRhbSIsIl9pZCI6IjY3YWQwYzM5MjQyODIwODVmZDczNjQwZSIsImlhdCI6MTczOTQ4MTk3MCwiZXhwIjoxNzM5NDg1NTcwfQ.aje0LJSzVdf9sonWgp3HoMjd4Mt9MT2C1MMCGHZGmAY",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/user/67abfca29f48971e36c18b18",
+							"raw": "{{base_url}}/api/user/me",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"user",
-								"67abfca29f48971e36c18b18"
+								"me"
 							]
 						}
 					},
@@ -77,17 +105,26 @@
 				{
 					"name": "Get Suggestions",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJwcml0YW02NThAZ21haWwuY29tIiwibmFtZSI6IlByaXRhbSIsIl9pZCI6IjY3YWQwYzM5MjQyODIwODVmZDczNjQwZSIsImlhdCI6MTczOTQ4MTk3MCwiZXhwIjoxNzM5NDg1NTcwfQ.aje0LJSzVdf9sonWgp3HoMjd4Mt9MT2C1MMCGHZGmAY",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/user/67abfca29f48971e36c18b18/suggestions",
+							"raw": "{{base_url}}/api/user/suggestions",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"user",
-								"67abfca29f48971e36c18b18",
 								"suggestions"
 							]
 						}
@@ -101,7 +138,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"Test\",\r\n  \"email\": \"test@gmail.com\",\r\n  \"birthdate\": \"1997-02-15\",\r\n  \"preferences\": [\"vegetables\", \"dairy\"]\r\n}\r\n",
+							"raw": "{\r\n  \"name\": \"Pritam\",\r\n  \"email\": \"bpritam658@gmail.com\",\r\n  \"birthdate\": \"1997-02-15\",\r\n  \"password\":\"test\",\r\n  \"preferences\": [\"vegetables\", \"dairy\"]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -116,6 +153,34 @@
 							"path": [
 								"api",
 								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \r\n  \"email\": \"bpritam658@gmail.com\",\r\n  \"password\":\"test\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"login"
 							]
 						}
 					},
@@ -145,14 +210,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/user/67ab76bc93c80a40baa03727/reset",
+							"raw": "{{base_url}}/api/user/reset",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"user",
-								"67ab76bc93c80a40baa03727",
 								"reset"
 							]
 						}
@@ -186,37 +250,6 @@
 							"path": [
 								"products",
 								"load"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Load Products Copy",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"Alice\",\r\n  \"email\": \"alice@example.com\",\r\n  \"birthdate\": \"1992-05-15\",\r\n  \"preferences\": [\"fruits\", \"vegetables\", \"dairy\"]\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/products/suggestions/67ab76a993c80a40baa03724",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"products",
-								"suggestions",
-								"67ab76a993c80a40baa03724"
 							]
 						}
 					},

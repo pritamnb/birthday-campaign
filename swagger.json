@@ -1,0 +1,384 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/health": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "General"
+        ]
+      }
+    },
+    "/api/user/me": {
+      "get": {
+        "operationId": "UserController_getProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "User details fetched successfully"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get authenticated user details",
+        "tags": [
+          "User Services"
+        ]
+      }
+    },
+    "/api/user/suggestions": {
+      "get": {
+        "operationId": "UserController_getProductSuggestions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Product suggestions fetched successfully"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get product suggestions based on user preferences",
+        "tags": [
+          "User Services"
+        ]
+      }
+    },
+    "/api/user": {
+      "post": {
+        "operationId": "UserController_createUser",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "User creation data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              },
+              "examples": {
+                "application/json": {
+                  "value": {
+                    "name": "Test",
+                    "email": "test@gmail.com",
+                    "birthdate": "1997-02-15",
+                    "preferences": [
+                      "vegetables",
+                      "dairy"
+                    ],
+                    "password": "userPassword123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User created successfully"
+          },
+          "409": {
+            "description": "User already exist!"
+          },
+          "500": {
+            "description": "Unable to create user!"
+          }
+        },
+        "summary": "User Creation",
+        "tags": [
+          "User Services"
+        ]
+      },
+      "get": {
+        "operationId": "UserController_getBirthdayUsers",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Users fetched successfully"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "summary": "Get users who has birthday in this week",
+        "tags": [
+          "User Services"
+        ]
+      }
+    },
+    "/api/user/login": {
+      "post": {
+        "operationId": "UserController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Login credentials",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              },
+              "examples": {
+                "application/json": {
+                  "value": {
+                    "email": "test@gmail.com",
+                    "password": "userPassword123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Logged in successfully"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "summary": "Login",
+        "tags": [
+          "User Services"
+        ]
+      }
+    },
+    "/api/user/reset": {
+      "get": {
+        "operationId": "UserController_resetCodeGen",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User Services"
+        ]
+      }
+    },
+    "/api/products/load": {
+      "post": {
+        "operationId": "ProductController_loadProductData",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Create Products",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductDto"
+              },
+              "examples": {
+                "application/json": {
+                  "value": [
+                    {
+                      "name": "string",
+                      "category": "Grains & Pasta",
+                      "rating": 4.8
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Products loaded successfully"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "summary": "Creates multiple products",
+        "tags": [
+          "Products"
+        ]
+      }
+    },
+    "/api/discount/redeem": {
+      "post": {
+        "operationId": "DiscountController_redeemDiscount",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Discount successfully redeemed!"
+          },
+          "400": {
+            "description": "Invalid or already used discount code!"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Redeem the code",
+        "tags": [
+          "Discounts"
+        ]
+      }
+    },
+    "/api/discount/available": {
+      "get": {
+        "operationId": "DiscountController_getAvailableDiscounts",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Discount code successfully redeemed!"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get available codes",
+        "tags": [
+          "Discounts"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Birthday Campaign",
+    "description": "API description",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "The unique identifier of the discount"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the user"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email of the user"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password"
+          },
+          "birthdate": {
+            "type": "string",
+            "description": "Birthdate of the user",
+            "example": "2025-02-12T00:00:00.000Z"
+          },
+          "preferences": {
+            "type": "array",
+            "description": "User preferences",
+            "items": {
+              "type": "string",
+              "enum": [
+                "vegetables",
+                "dairy",
+                "meat",
+                "fruits",
+                "Seafood",
+                "Grains"
+              ]
+            }
+          }
+        },
+        "required": [
+          "_id",
+          "name",
+          "email",
+          "password",
+          "birthdate",
+          "preferences"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User email",
+            "example": "test@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "User password",
+            "example": "userPassword123"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "ProductDto": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "The unique identifier of the discount"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the product",
+            "example": "Sample Product"
+          },
+          "category": {
+            "type": "string",
+            "description": "The category of the product",
+            "example": "Electronics"
+          },
+          "rating": {
+            "type": "number",
+            "description": "The rating of the product, from 0 to 5",
+            "example": 4
+          }
+        },
+        "required": [
+          "_id",
+          "name",
+          "category",
+          "rating"
+        ]
+      }
+    }
+  }
+}

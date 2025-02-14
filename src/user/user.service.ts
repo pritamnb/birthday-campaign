@@ -20,6 +20,9 @@ export class UserService {
     async findById(id: string): Promise<any> {
         return this.userRepository.findById(id);
     }
+    async findByEmail(email: string): Promise<any> {
+        return this.userRepository.findEmail(email);
+    }
 
     async create(createUserDto: CreateUserDto): Promise<any> {
         return this.userRepository.create(createUserDto);
@@ -35,7 +38,11 @@ export class UserService {
         return this.userRepository.getBirthdayUsers();
     }
 
-
+    /**
+     * 
+     * @param user details
+     * Being called from cron job sends notification and update the status
+     */
     private async sendBirthdayNotification(user: any) {
         try {
             const { email } = user;
@@ -49,6 +56,11 @@ export class UserService {
         }
     }
 
+    /**
+     * 
+     * @param user details
+     * @returns email subject and html(wishes, a code and personalized products)
+     */
     private async generateTemplate(user: any) {
         const { birthdate, name } = user;
         const startDate = moment(birthdate)
@@ -113,22 +125,32 @@ export class UserService {
         return { emailSubject, html };
     }
 
+    /**
+     * resets all the notification and code generated flags back to false 
+     * so that next time it won't be an issue to generate and send notification
+     */
     async resetNotifications() {
         await this.userRepository.resetNotifications();
     }
 
 
 
+    /**
+     * A CRON job which runs at every midnight 
+     * lists all the eligible users and send notification to them
+     */
     @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
     async handleCron() {
         console.log('Running cron job to find eligible users...');
         try {
             const eligibleUsers = await this.getBirthdayUsers();
             for (const user of eligibleUsers) {
+                // notification and discount code not generated user filtering
                 if (!user.notificationSent && !user.discountGenerated) {
                     await this.sendBirthdayNotification(user);
                 }
             }
+            // resent notification and code gen status of a user
             await this.resetNotifications();
         } catch (error) {
             console.error('Error in cron job:', error);

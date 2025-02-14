@@ -6,34 +6,34 @@ import * as moment from 'moment';
 
 @Injectable()
 export class UserRepository {
-    private today = moment().startOf('day');
-    private nextWeek = moment(this.today).add(7, 'days');
-    private todayMonthDay = this.today.format('MM-DD');
-    private nextWeekMonthDay = this.nextWeek.format('MM-DD');
 
-    private greaterThan = {
-        $gte: [
-            { $dateToString: { format: "%m-%d", date: "$birthdate" } }, // Format birthdate as MM-DD
-            this.todayMonthDay  // Compared with today's month and day
-        ]
-    }
-    private lessThan = {
-        $lt: [
-            { $dateToString: { format: "%m-%d", date: "$birthdate" } }, // Format birthdate as MM-DD
-            this.nextWeekMonthDay // Compared with the next week's month and day
-        ]
-    }
-    constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) { }
+    constructor(
+        @InjectModel(User.name) private userModel: Model<UserDocument>
+    ) { }
 
     async findById(id: string): Promise<User | null> {
         return this.userModel.findById(id).exec();
     }
 
+    async findEmail(email: string): Promise<User> {
+        const user = await this.userModel.find({ email }).exec();
+        return user[0]
+    }
+
+    /**
+     * 
+     * @param createUserDto details
+     * @returns created user
+     */
     async create(createUserDto: any): Promise<User> {
         const createdUser = new this.userModel(createUserDto);
         return createdUser.save();
     }
 
+    /**
+     * 
+     * @returns List all the users who's birthdays are within 7 days
+     */
     async getBirthdayUsers(): Promise<User[]> {
         const today = moment().startOf('day');
         const nextWeek = moment(today).add(7, 'days');
@@ -42,18 +42,29 @@ export class UserRepository {
         const todayMonthDay = today.format('MM-DD');
         const nextWeekMonthDay = nextWeek.format('MM-DD');
 
-        console.log('Query parameters: updates', { todayMonthDay, nextWeekMonthDay });
 
         try {
             // Users whose birthdays are between today and 7 days from now, ignoring the year
             const users = await this.userModel.find({
                 $expr: {
                     $and: [
-                        this.greaterThan,
-                        this.lessThan
+                        {
+                            $gte: [
+                                { $dateToString: { format: "%m-%d", date: "$birthdate" } }, // Format birthdate as MM-DD
+                                todayMonthDay  // Compared with today's month and day
+                            ]
+                        },
+                        {
+                            $lt: [
+                                { $dateToString: { format: "%m-%d", date: "$birthdate" } }, // Format birthdate as MM-DD
+                                nextWeekMonthDay // Compared with the next week's month and day
+                            ]
+                        }
                     ]
                 }
-            }).exec();
+            })
+                .select(['email', '_id', 'name', 'birthdate', 'preferences', 'discountGenerated', 'notificationSent'])
+                .exec();
             return users;
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -61,6 +72,12 @@ export class UserRepository {
         }
     }
 
+    /**
+     * To update users notification sent status 
+     * @param userId string
+     * @param notificationSent boolean
+     * @param discountGenerated boolean
+     */
     async updateNotificationStatus(userId: string, notificationSent: boolean, discountGenerated: boolean): Promise<void> {
         const user = await this.userModel.findById(userId);
         if (user) {
@@ -70,11 +87,15 @@ export class UserRepository {
         }
     }
 
+    /**
+     * Filter those users who's birthdate is passed and not within next 7 days
+     */
     async resetNotifications(): Promise<void> {
         const today = moment().startOf('day');
         const nextWeek = moment(today).add(7, 'days');
         const todayMonthDay = today.format('MM-DD');
         const nextWeekMonthDay = nextWeek.format('MM-DD');
+        console.log("Reset notification");
 
         try {
             const users = await this.userModel.find({
