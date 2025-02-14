@@ -10,7 +10,7 @@ import { DiscountModule } from 'src/discount/discount.module';
         forwardRef(() => UserModule),
         DiscountModule,
         JwtModule.register({
-            secret: configurations.secretKey,
+            secret: configurations.SECRET_KEY,
             signOptions: { expiresIn: '1h' }, // expires in 1h
         })],
     providers: [AuthService],

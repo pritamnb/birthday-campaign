@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Post, Req, Res } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { Product } from './product.schema';
 import { Request, Response } from 'express';
-import { SystemResponse } from 'src/libs/response-handler';
+import { StatusCodes, SystemResponse } from 'src/libs/response-handler';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ProductDto } from './dto/product.dto';
 
@@ -43,18 +43,18 @@ export class ProductController {
             const { logger } = res.locals;
 
             const result = await this.productService.loadProducts(products);
-            if (!result) return res.send(SystemResponse.notFoundError('Loading products failed!!', result))
+            if (!result) return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(SystemResponse.internalServerError('Loading products failed!!', result))
 
             logger.info({
                 message: 'Products loaded successfully!',
                 data: [],
                 option: [],
             });
-            return res.send(
+            return res.status(StatusCodes.SUCCESS).send(
                 SystemResponse.success('Products loaded successfully!', { count: result.length }),
             )
         } catch (err) {
-            return res.send(SystemResponse.internalServerError('Error', err.message));
+            return res.status(StatusCodes.NOT_FOUND).send(SystemResponse.internalServerError('Error', err.message));
         }
     }
 }

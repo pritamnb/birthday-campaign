@@ -32,12 +32,16 @@ export class ProductService {
     async getTopRatedProductByCategory(userId: string): Promise<Product[]> {
         // User and their preferences
         const user = await this.userModel.findById(userId);
-        if (!user || !user.preferences || user.preferences.length === 0) {
-            throw new NotFoundException('User not found or no preferences set');
+        if (!user) {
+            throw new NotFoundException('User not found');
         }
 
+        // Check if user has preferences
+        if (!user.preferences || user.preferences.length === 0) {
+            return [];
+        }
         // case-insensitive regex match
-        const categoryConditions = user.preferences.map(pref => ({
+        const categoryConditions = user?.preferences?.map(pref => ({
             category: { $regex: pref, $options: 'i' }  // Case-insensitive regex for each category
         }));
 

@@ -2,7 +2,7 @@ import { Body, Controller, forwardRef, Get, Inject, Param, Post, Req, Res, UseGu
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Request, Response } from 'express';
-import { SystemResponse } from 'src/libs/response-handler';
+import { StatusCodes, SystemResponse } from 'src/libs/response-handler';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -39,7 +39,7 @@ export class UserController {
             const userId = req?.user?._id; //  user id from token
             const user = await this.userService.findById(userId);
 
-            if (!user) return res.send(SystemResponse.notFoundError('User not found!', user));
+            if (!user) return res.status(StatusCodes.NOT_FOUND).send(SystemResponse.notFoundError('User not found!', user));
 
             logger.info({ message: 'User fetched successfully', data: user, });
 
@@ -50,10 +50,10 @@ export class UserController {
                 birthdate: user.birthdate,
                 preferences: user.preferences
             }
-            return res.send(SystemResponse.success('User fetched successfully', userData));
+            return res.status(StatusCodes.SUCCESS).send(SystemResponse.success('User fetched successfully', userData));
 
         } catch (err) {
-            return res.send(SystemResponse.internalServerError('Error fetching user', err.message));
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(SystemResponse.internalServerError('Error fetching user', err.message));
         }
     }
 
@@ -78,19 +78,19 @@ export class UserController {
 
             const userId = req?.user?._id; // userid from token
 
-            if (!userId) return res.send(SystemResponse.notFoundError('User ID not found in the token!', userId));
+            if (!userId) return res.status(StatusCodes.NOT_FOUND).send(SystemResponse.notFoundError('User ID not found in the token!', userId));
 
             const products = await this.userService.getProductSuggestions(userId);
 
-            if (!products) return res.send(SystemResponse.notFoundError('No products found for the user!', products));
+            if (!products) return res.status(StatusCodes.NOT_FOUND).send(SystemResponse.notFoundError('No products found for the user!', products));
 
 
             logger.info({ message: 'Products fetched successfully!', data: products });
 
-            return res.send(SystemResponse.success('Products fetched successfully', products));
+            return res.status(StatusCodes.SUCCESS).send(SystemResponse.success('Products fetched successfully', products));
 
         } catch (err) {
-            return res.send(SystemResponse.internalServerError('Error fetching product suggestions', err.message));
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(SystemResponse.internalServerError('Error fetching product suggestions', err.message));
         }
     }
 
@@ -115,7 +115,9 @@ export class UserController {
     })
     @ApiOperation({ summary: 'User Creation' })
     @ApiResponse({ status: 200, description: 'User created successfully' })
-    @ApiResponse({ status: 404, description: 'Not found' })
+    @ApiResponse({ status: 409, description: 'User already exist!' })
+
+    @ApiResponse({ status: 500, description: 'Unable to create user!' })
     async createUser(
         @Req() req: Request,
         @Res() res: Response,
@@ -125,13 +127,16 @@ export class UserController {
         const { logger } = res.locals;
         try {
             // Hash the password before storing
+            const isUserExist = await this.userService.findByEmail(createUserDto?.email);
+            if (isUserExist) return res.status(StatusCodes.CONFLICT).send(SystemResponse.conflictError('Email already exist!', ''));
+
             const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
             createUserDto.password = hashedPassword;
 
             // Create the user
             const isUserCreated = await this.userService.create(createUserDto);
 
-            if (!isUserCreated) return res.send(SystemResponse.notFoundError('Unable to create user!', isUserCreated));
+            if (!isUserCreated) return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(SystemResponse.internalServerError('Unable to create user!', isUserCreated));
 
             // Generate JWT token
             const token = await this.authService.generateToken(isUserCreated);
@@ -143,10 +148,10 @@ export class UserController {
             });
             const userData = { name: isUserCreated?.name, email: isUserCreated?.email }
 
-            return res.send(SystemResponse.success('User created successfully!', { userData, token }));
+            return res.status(StatusCodes.SUCCESS).send(SystemResponse.success('User created successfully!', { userData, token }));
 
         } catch (err) {
-            return res.send(SystemResponse.internalServerError('Error', err.message));
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(SystemResponse.internalServerError('Error', err.message));
         }
     }
 
@@ -181,13 +186,13 @@ export class UserController {
             const user = await this.userService.findByEmail(loginDto.email);
 
             if (!user) {
-                return res.send(SystemResponse.notFoundError('User not found!', user));
+                return res.status(StatusCodes.NOT_FOUND).send(SystemResponse.notFoundError('User not found!', user));
             }
 
             // Compare hashed password
             const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
             if (!isPasswordValid) {
-                return res.send(SystemResponse.unauthorizedError('Invalid credentials.', ''));
+                return res.status(StatusCodes.UNAUTHORIZED).send(SystemResponse.unauthorizedError('Invalid credentials.', ''));
             }
 
             // Generate JWT token
@@ -198,22 +203,18 @@ export class UserController {
                 data: [],
                 option: [],
             });
-            const { _id,
-                name,
-                email,
-                birthdate,
-                preferences } = user
 
             const userData = {
-                _id,
-                name,
-                email,
-                birthdate,
-                preferences
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                birthdate: user.birthdate,
+                preferences: user.preferences
             }
-            return res.send(SystemResponse.success('Login successful!', { userData, token }));
+
+            return res.status(StatusCodes.SUCCESS).send(SystemResponse.success('Login successful!', { userData, token }));
         } catch (err) {
-            return res.send(SystemResponse.internalServerError('Error', err.message));
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(SystemResponse.internalServerError('Error', err.message));
         }
     }
 
@@ -237,18 +238,18 @@ export class UserController {
             const users = await this.userService.getBirthdayUsers();
             // const users: any = await this.userService.handleCron(); // To run the cron job manually Not recommended
 
-            if (!users) return res.send(SystemResponse.notFoundError('Users not found!', users))
+            if (!users) return res.status(StatusCodes.NOT_FOUND).send(SystemResponse.notFoundError('Users not found!', users))
 
             logger.info({
                 message: 'Birthday users fetched successfully',
                 data: [],
                 option: [],
             });
-            return res.send(
-                SystemResponse.success('Birthday users fetched successfully', users),
-            );
+
+
+            return res.status(StatusCodes.SUCCESS).send(SystemResponse.success('Birthday users fetched successfully', users));
         } catch (err) {
-            return res.send(SystemResponse.internalServerError('Error', err.message));
+            return res.status(StatusCodes.NOT_FOUND).send(SystemResponse.internalServerError('Error', err.message));
         }
     }
 
@@ -261,11 +262,9 @@ export class UserController {
     async resetCodeGen(
         @Req() req: Request,
         @Res() res: Response,
-        @Param('id') id: string
     ) {
-
         this.userService.resetNotifications();
-        return res.send(
+        return res.status(StatusCodes.SUCCESS).send(
             SystemResponse.success('Notification state reset successfully!')
         )
     }

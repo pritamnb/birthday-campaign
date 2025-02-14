@@ -1,6 +1,6 @@
 import { Controller, Get, Res } from '@nestjs/common';
 import { AppService } from './app.service';
-import { SystemResponse } from './libs/response-handler';
+import { StatusCodes, SystemResponse } from './libs/response-handler';
 import { Response } from 'express';
 import { ApiTags } from '@nestjs/swagger';
 @ApiTags('General')
@@ -13,7 +13,7 @@ export class AppController {
   getHello(
     @Res() res: Response
   ) {
-    return res.send(
+    return res.status(StatusCodes.SUCCESS).send(
       SystemResponse.success('Health-check', this.appService.getHello()),
     );
   }
