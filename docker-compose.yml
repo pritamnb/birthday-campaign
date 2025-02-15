@@ -11,6 +11,9 @@ services:
       - MONGO_URI=mongodb://mongo:27017/birthdayCampaign
       - EMAIL_USER=pritam.bhalerao9284@gmail.com
       - EMAIL_PASS=ticz eees rxct bnji
+      - PORT=3000
+      - NODE_ENV=dev
+      - SECRET_KEY=c34848c1d26bf1e47e773e3881e584445bf3e5be6ed12fa251cccb1e7d11b48a
     volumes:
       - .:/app
       - /app/node_modules
