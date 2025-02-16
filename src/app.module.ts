@@ -13,6 +13,7 @@ import { AuthModule } from './auth/auth.module';
 import configurations from './config/configuration';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
+import { CronService } from './cron/cron.service';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -26,6 +27,6 @@ import { JwtModule } from '@nestjs/jwt';
     JwtModule
   ],
   controllers: [AppController],
-  providers: [AppService, JwtStrategy],
+  providers: [AppService, JwtStrategy, CronService],
 })
 export class AppModule { }

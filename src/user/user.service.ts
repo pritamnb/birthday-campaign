@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { CreateUserDto } from './dto/create-user.dto';
-import { Cron, CronExpression } from '@nestjs/schedule';
 import { NotificationService } from 'src/notification/notification.service';
 import { DiscountService } from 'src/discount/discount.service';
 import { ProductService } from 'src/product/product.service';
@@ -43,7 +42,7 @@ export class UserService {
      * @param user details
      * Being called from cron job sends notification and update the status
      */
-    private async sendBirthdayNotification(user: any) {
+    public async sendBirthdayNotification(user: any) {
         try {
             const { email } = user;
             const { emailSubject, html } = await this.generateTemplate(user);
@@ -131,30 +130,6 @@ export class UserService {
      */
     async resetNotifications() {
         await this.userRepository.resetNotifications();
-    }
-
-
-
-    /**
-     * A CRON job which runs at every midnight 
-     * lists all the eligible users and send notification to them
-     */
-    @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-    async handleCron() {
-        console.log('Running cron job to find eligible users...');
-        try {
-            const eligibleUsers = await this.getBirthdayUsers();
-            for (const user of eligibleUsers) {
-                // notification and discount code not generated user filtering
-                if (!user.notificationSent && !user.discountGenerated) {
-                    await this.sendBirthdayNotification(user);
-                }
-            }
-            // resent notification and code gen status of a user
-            await this.resetNotifications();
-        } catch (error) {
-            console.error('Error in cron job:', error);
-        }
     }
 
 }
