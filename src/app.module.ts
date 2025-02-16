@@ -2,14 +2,9 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
-import { UserModule } from './user/user.module';
 
-import { NotificationModule } from './notification/notification.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
-import { DiscountModule } from './discount/discount.module';
-import { ProductModule } from './product/product.module';
-import { AuthModule } from './auth/auth.module';
 import configurations from './config/configuration';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
@@ -19,14 +14,23 @@ import { CronService } from './cron/cron.service';
     ConfigModule.forRoot(),
     MongooseModule.forRoot(configurations.mongo),
     ScheduleModule.forRoot(),
-    UserModule,
-    NotificationModule,
-    DiscountModule,
-    ProductModule,
-    AuthModule,
+
     JwtModule
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy, CronService],
 })
-export class AppModule { }
+export class AppModule {
+  static async registerModules() {
+    return {
+      module: AppModule,
+      imports: [
+        (await import('./auth/auth.module')).AuthModule,
+        (await import('./user/user.module')).UserModule,
+        (await import('./product/product.module')).ProductModule,
+        (await import('./discount/discount.module')).DiscountModule,
+        (await import('./notification/notification.module')).NotificationModule
+      ]
+    }
+  }
+}

@@ -266,7 +266,7 @@
   },
   "info": {
     "title": "Birthday Campaign",
-    "description": "API description",
+    "description": "Discount code generation a week before birthday and suggest products to buy.",
     "version": "1.0",
     "contact": {}
   },
